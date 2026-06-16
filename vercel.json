@@ -1,5 +1,14 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    { "source": "/company{/}?", "destination": "/about.html", "permanent": true },
+    { "source": "/culture-career{/}?", "destination": "/culture.html", "permanent": true },
+    { "source": "/campus-recruitment{/}?", "destination": "/culture.html", "permanent": true },
+    { "source": "/contact{/}?", "destination": "/contact.html", "permanent": true },
+    { "source": "/open-positions{/}?", "destination": "/open-positions.html", "permanent": true },
+    { "source": "/privacy-policy{/}?", "destination": "/privacy-policy.html", "permanent": true },
+    { "source": "/credits{/}?", "destination": "/", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/images/(.*)",
