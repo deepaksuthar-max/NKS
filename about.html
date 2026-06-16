@@ -39,7 +39,9 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap"></noscript>
 
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/accessibility.css">
@@ -194,7 +196,7 @@
 <body>
   <div id="splash" role="status" aria-label="Loading">
     <div class="splash-inner">
-      <img src="images/logo.png" alt="NK Securities Research" class="splash-logo">
+      <img src="images/logo.webp" alt="NK Securities Research" class="splash-logo">
       <div class="splash-wordmark">NK Securities <span>Research</span></div>
       <div class="splash-loader"><span></span></div>
     </div>
@@ -206,7 +208,7 @@
     <div class="nav-container">
       <div class="nav-left">
         <a href="index.html" class="nav-logo">
-          <img src="images/logo.png" alt="NK Securities" class="nav-logo-img">
+          <img src="images/logo.webp" alt="NK Securities" class="nav-logo-img">
           <span class="nav-logo-text">Securities <span>Research</span></span>
         </a>
 
@@ -275,7 +277,7 @@
       <div class="leadership-grid-compact">
         <div class="leader-card-compact fade-up stagger-child">
           <div class="leader-image-compact">
-            <img src="https://www.nksecurities.com/wp-content/uploads/2022/07/B10.jpg" alt="Sudhanshu Narang" loading="lazy">
+            <img src="images/Sudhanshu_Narang_about.webp" alt="Sudhanshu Narang" loading="lazy">
           </div>
           <div class="leader-info">
             <span class="leader-role">Director & Co-Founder</span>
@@ -290,7 +292,7 @@
 
         <div class="leader-card-compact fade-up stagger-child">
           <div class="leader-image-compact">
-            <img src="https://www.nksecurities.com/wp-content/uploads/2022/07/b9.jpg" alt="Faraz Khan" loading="lazy">
+            <img src="images/Faraz_khan_about.webp" alt="Faraz Khan" loading="lazy">
           </div>
           <div class="leader-info">
             <span class="leader-role">Director & Co-Founder</span>
@@ -384,10 +386,10 @@
     </div>
   </footer>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="js/particles-bg.js"></script>
-  <script src="js/main.js"></script>
-  <script src="js/accessibility.js"></script>
+  <script src="js/vendor/three.min.js"></script>
+  <script src="js/bundle-b.js"></script>
+
+  
 
   <script>
     (function() {
