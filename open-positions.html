@@ -246,8 +246,8 @@
     }
 
     .hero-careers-right {
-      flex: 0 0 460px;
-      width: 460px;
+      flex: 0 0 580px;
+      width: 580px;
       height: 460px;
       position: relative;
     }
@@ -262,9 +262,9 @@
 
     @media (max-width: 1024px) {
       .hero-careers-right {
-        flex: 0 0 380px;
-        width: 380px;
-        height: 380px;
+        flex: 0 0 440px;
+        width: 440px;
+        height: 360px;
       }
     }
 
@@ -275,7 +275,7 @@
       .hero-careers-right {
         flex: none;
         width: 100%;
-        max-width: 340px;
+        max-width: 460px;
         height: 300px;
         margin: 0 auto;
       }
@@ -519,9 +519,11 @@
 
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(50, d.w / d.h, 0.1, 100);
-    camera.position.z = 5.8;
+    camera.position.z = 7.2;
 
     var spin = new THREE.Group();
+    spin.scale.setScalar(1.4); // overall size of the order book
+    spin.position.y = 0.25;     // lift so the low baseline reads centred
     scene.add(spin);
 
     var BLUE       = 0x243d93;
@@ -529,63 +531,65 @@
     var GREEN      = 0x64a443;
     var GREEN_HI   = 0x82c255;
 
-    function buildPlusGeo(w, L, depth) {
+    // ---- Order-book depth: animated bid/ask bars (HFT market-microstructure theme) ----
+    var LEVELS    = 6;     // price levels per side
+    var BAR_W     = 0.30;  // bar width / depth
+    var STEP      = 0.36;  // centre-to-centre spacing between levels
+    var GAP       = 0.30;  // half-gap at the mid price (the spread)
+    var BASE_Y    = -1.75; // baseline the bars grow up from
+    var MAX_H     = 3.7;   // tallest a bar can reach
 
-      var s = new THREE.Shape();
-      s.moveTo(-w,  L);
-      s.lineTo( w,  L);
-      s.lineTo( w,  w);
-      s.lineTo( L,  w);
-      s.lineTo( L, -w);
-      s.lineTo( w, -w);
-      s.lineTo( w, -L);
-      s.lineTo(-w, -L);
-      s.lineTo(-w, -w);
-      s.lineTo(-L, -w);
-      s.lineTo(-L,  w);
-      s.lineTo(-w,  w);
-      s.closePath();
-      return new THREE.ExtrudeGeometry(s, { depth: depth, bevelEnabled: false });
+    // Shared unit-height geometries (scaled per-frame): one fill, one wireframe outline
+    var barGeo  = new THREE.BoxGeometry(BAR_W, 1, BAR_W);
+    var barEdge = new THREE.EdgesGeometry(barGeo);
+
+    var bars = [];
+    function makeSide(sign, fill, edge) {
+      // sign -1 = bids (left / green), +1 = asks (right / blue)
+      for (var i = 0; i < LEVELS; i++) {
+        var x = sign * (GAP + BAR_W / 2 + i * STEP);
+
+        var fillMat = new THREE.MeshBasicMaterial({ color: fill, transparent: true, opacity: 0.32, depthWrite: false });
+        var bar = new THREE.Mesh(barGeo, fillMat);
+
+        var outline = new THREE.LineSegments(barEdge, new THREE.LineBasicMaterial({ color: edge, transparent: true, opacity: 0.95, depthWrite: false }));
+        bar.add(outline); // outline scales with the bar
+
+        bar.position.x = x;
+        // a staircase envelope: deeper levels (toward the edges) tend to be larger
+        bar.userData.base  = 0.8 + (i / (LEVELS - 1)) * 1.5;
+        bar.userData.phase = i * 0.55 + (sign > 0 ? Math.PI : 0);
+
+        bars.push(bar);
+        spin.add(bar);
+      }
     }
+    makeSide(-1, GREEN, GREEN_HI); // bids
+    makeSide( 1, BLUE,  BLUE_HI);  // asks
 
-    function wirePlus(w, L, depth, color, opacity) {
-      var geo   = buildPlusGeo(w, L, depth);
-      var edges = new THREE.EdgesGeometry(geo);
-      edges.center();
-      var mat = new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: opacity, depthWrite: false });
-      return new THREE.LineSegments(edges, mat);
-    }
+    // Mid-price baseline through the centre of the book
+    var midGeo = new THREE.BufferGeometry();
+    var span = GAP + LEVELS * STEP + 0.2;
+    midGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([
+      -span, BASE_Y, 0,  span, BASE_Y, 0
+    ]), 3));
+    var midLine = new THREE.LineSegments(midGeo, new THREE.LineBasicMaterial({ color: BLUE_HI, transparent: true, opacity: 0.45, depthWrite: false }));
+    spin.add(midLine);
 
-    var plusCore  = wirePlus(0.38, 1.45, 0.25, BLUE_HI, 1.0);
-
-    var plusHalo1 = wirePlus(0.44, 1.70, 0.30, BLUE, 0.45);
-    var plusHalo2 = wirePlus(0.44, 1.70, 0.30, BLUE, 0.20);
-    var plusHalo3 = wirePlus(0.44, 1.70, 0.30, BLUE, 0.12);
-    var plusHalo4 = wirePlus(0.44, 1.70, 0.30, BLUE, 0.07);
-    var plusHalo5 = wirePlus(0.44, 1.70, 0.30, BLUE, 0.03);
-    plusHalo1.scale.setScalar(1.10);
-    plusHalo2.scale.setScalar(1.22);
-    plusHalo3.scale.setScalar(1.38);
-    plusHalo4.scale.setScalar(1.58);
-    plusHalo5.scale.setScalar(1.82);
-
-    spin.add(plusCore, plusHalo1, plusHalo2, plusHalo3, plusHalo4, plusHalo5);
-
-    spin.rotation.x = 0.28;
-    spin.rotation.y = 0.35;
+    // Front-facing start angle — drag to rotate, but no automatic spin
+    spin.rotation.x = 0.16;
+    spin.rotation.y = -0.28;
 
     wrap.style.cursor = 'grab';
 
     var dragging = false;
     var lastX = 0, lastY = 0;
     var velX = 0, velY = 0;
-    var autoSpin = true;
 
     wrap.addEventListener('mousedown', function (e) {
-      dragging  = true;
-      autoSpin  = false;
-      lastX     = e.clientX;
-      lastY     = e.clientY;
+      dragging = true;
+      lastX    = e.clientX;
+      lastY    = e.clientY;
       velX = velY = 0;
       wrap.style.cursor = 'grabbing';
       e.preventDefault();
@@ -607,13 +611,10 @@
       if (!dragging) return;
       dragging = false;
       wrap.style.cursor = 'grab';
-
-      setTimeout(function () { autoSpin = true; }, 1500);
     });
 
     wrap.addEventListener('touchstart', function (e) {
       dragging = true;
-      autoSpin = false;
       lastX = e.touches[0].clientX;
       lastY = e.touches[0].clientY;
       velX = velY = 0;
@@ -633,7 +634,6 @@
 
     window.addEventListener('touchend', function () {
       dragging = false;
-      setTimeout(function () { autoSpin = true; }, 1500);
     });
 
     var t = 0;
@@ -641,21 +641,24 @@
       requestAnimationFrame(loop);
       t += 0.008;
 
+      // Inertia after releasing a drag — settles to a stop, never auto-spins
       if (!dragging) {
-
         velX *= 0.92;
         velY *= 0.92;
         spin.rotation.x += velX;
         spin.rotation.y += velY;
-
-        if (autoSpin) spin.rotation.y += 0.004;
       }
 
-      plusHalo1.material.opacity = 0.30 + 0.18 * Math.sin(t * 1.4);
-      plusHalo2.material.opacity = 0.10 + 0.10 * Math.sin(t * 1.0);
-      plusHalo3.material.opacity = 0.07 + 0.05 * Math.sin(t * 0.8);
-      plusHalo4.material.opacity = 0.04 + 0.03 * Math.sin(t * 0.6);
-      plusHalo5.material.opacity = 0.02 + 0.01 * Math.sin(t * 0.4);
+      // Live order-book updates — each level's depth ticks up and down
+      for (var bi = 0; bi < bars.length; bi++) {
+        var bar = bars[bi];
+        var d   = bar.userData.base
+                + 0.35 * Math.sin(t * 1.7 + bar.userData.phase)
+                + 0.18 * Math.sin(t * 3.1 + bar.userData.phase * 1.7);
+        var h = Math.max(0.12, Math.min(MAX_H, d));
+        bar.scale.y = h;
+        bar.position.y = BASE_Y + h / 2; // grow upward from the baseline
+      }
 
       renderer.render(scene, camera);
     })();

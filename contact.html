@@ -356,6 +356,37 @@
       padding: 16px 48px;
     }
 
+    /* Loading state for the submit button while EmailJS is sending */
+    .contact-form-full .form-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Inline status message shown after a submission attempt */
+    .form-status {
+      display: none;
+      padding: 14px 16px;
+      border-radius: 4px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .form-status.is-visible {
+      display: block;
+    }
+
+    .form-status.is-success {
+      background: rgba(34, 139, 34, 0.12);
+      border: 1px solid rgba(34, 139, 34, 0.5);
+      color: #2e7d32;
+    }
+
+    .form-status.is-error {
+      background: rgba(200, 35, 35, 0.12);
+      border: 1px solid rgba(200, 35, 35, 0.5);
+      color: #c62828;
+    }
+
     .compliance-section {
       max-width: 600px;
     }
@@ -620,7 +651,7 @@
     <div class="container">
       <div class="contact-form-wrapper fade-up">
         <h2 class="display-sm mb-40">Pleased to meet you</h2>
-        <form class="contact-form-full">
+        <form class="contact-form-full" id="contact-form" novalidate>
           <div class="form-row">
             <div class="form-group">
               <input type="text" id="name" name="name" placeholder="Name" required>
@@ -640,7 +671,9 @@
           <div class="form-group">
             <textarea id="message" name="message" placeholder="Message" rows="5" required></textarea>
           </div>
-          <button type="submit" class="form-submit">Submit</button>
+          <button type="submit" class="form-submit" id="contact-submit">Submit</button>
+          <!-- Success / error feedback is injected here by js/contact-form.js -->
+          <div class="form-status" id="form-status" role="alert" aria-live="polite"></div>
         </form>
       </div>
     </div>
@@ -667,86 +700,92 @@
           <table class="grievance-table">
             <thead>
               <tr>
+                <th>Details</th>
                 <th>Contact Person</th>
                 <th>Address</th>
+                <th>Contact Number</th>
+                <th>Email ID</th>
+                <th>Working Hours</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Customer Care</strong></td>
+                <td>Yatin Gupta</td>
+                <td>12th Floor, Two Horizon Center, DLF Phase-5, Sector 43, Gurgaon-122002</td>
+                <td>0124-695-8700</td>
+                <td><a href="mailto:ygupta@nksecurities.com">ygupta@nksecurities.com</a></td>
+                <td>09:30 AM to 04:00 PM</td>
+              </tr>
+              <tr>
+                <td><strong>Head of Customer Care</strong></td>
+                <td>Bharat Bhushan</td>
+                <td>12th Floor, Two Horizon Center, DLF Phase-5, Sector 43, Gurgaon-122002</td>
+                <td>0124-695-8700</td>
+                <td><a href="mailto:bbhushan@nksecurities.com">bbhushan@nksecurities.com</a></td>
+                <td>09:30 AM to 04:00 PM</td>
+              </tr>
+              <tr>
+                <td><strong>Compliance Officer</strong></td>
+                <td>Varun Narang</td>
+                <td>12th Floor, Two Horizon Center, DLF Phase-5, Sector 43, Gurgaon-122002</td>
+                <td>0124-695-8700</td>
+                <td><a href="mailto:v.narang@nksecurities.com">v.narang@nksecurities.com</a></td>
+                <td>09:30 AM to 04:00 PM</td>
+              </tr>
+              <tr>
+                <td><strong>CEO</strong></td>
+                <td>Sudhanshu Narang</td>
+                <td>12th Floor, Two Horizon Center, DLF Phase-5, Sector 43, Gurgaon-122002</td>
+                <td>0124-695-8700</td>
+                <td><a href="mailto:info@nksecurities.com">info@nksecurities.com</a></td>
+                <td>09:30 AM to 04:00 PM</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="body-text" style="margin-top: 32px; margin-bottom: 24px;">In absence of response / complaint not addressed to your satisfaction, you may lodge a complaint with SEBI or respective Exchanges at:</p>
+
+        <div class="table-wrapper">
+          <table class="grievance-table">
+            <thead>
+              <tr>
+                <th>Regulator / Exchange</th>
+                <th>Web Links</th>
                 <th>Contact Number</th>
                 <th>Email ID</th>
               </tr>
             </thead>
             <tbody>
-
               <tr>
-                <td>
-                  <strong>Head of Customer Care</strong><br>
-                  Bharat Bhushan
-                </td>
-                <td>The Executive Center, Level 12, Two Horizon Center, Golf Course Road, DLF Phase 5, Sector 43, Gurugram, Haryana, India 122002</td>
-                <td>+91 9654544456</td>
-                <td><a href="mailto:bharat.bhushan@nksecurities.com">bharat.bhushan@nksecurities.com</a></td>
+                <td><strong>Securities and Exchange Board of India (SEBI)</strong></td>
+                <td><a href="https://scores.gov.in" target="_blank" rel="noopener">SEBI SCORES</a></td>
+                <td>1800 22 7575 / 1800 266 7575</td>
+                <td><a href="https://scores.gov.in" target="_blank" rel="noopener">scores.gov.in</a></td>
               </tr>
               <tr>
-                <td>
-                  <strong>Compliance Officer</strong><br>
-                  Varun Narang
-                </td>
-                <td>The Executive Center, Level 12, Two Horizon Center, Golf Course Road, DLF Phase 5, Sector 43, Gurugram, Haryana, India 122002</td>
-                <td>+91 9873708954</td>
-                <td><a href="mailto:v.narang@nksecurities.com">v.narang@nksecurities.com</a></td>
+                <td><strong>National Stock Exchange of India Ltd. (NSE)</strong></td>
+                <td><a href="https://www.nseindia.com" target="_blank" rel="noopener">NSE</a></td>
+                <td>1800 22 0058</td>
+                <td><a href="mailto:ignse@nse.co.in">ignse@nse.co.in</a></td>
               </tr>
               <tr>
-                <td>
-                  <strong>CEO</strong><br>
-                  Sudhanshu Narang
-                </td>
-                <td>The Executive Center, Level 12, Two Horizon Center, Golf Course Road, DLF Phase 5, Sector 43, Gurugram, Haryana, India 122002</td>
-                <td>+91 9811038954</td>
-                <td><a href="mailto:s.narang@nksecurities.com">s.narang@nksecurities.com</a></td>
+                <td><strong>Bombay Stock Exchange Ltd. (BSE)</strong></td>
+                <td><a href="https://www.bseindia.com" target="_blank" rel="noopener">BSE</a></td>
+                <td>022 2272 8097</td>
+                <td><a href="mailto:is@bseindia.com">is@bseindia.com</a></td>
+              </tr>
+              <tr>
+                <td><strong>Multi Commodity Exchange of India Ltd. (MCX)</strong></td>
+                <td><a href="https://www.mcxindia.com" target="_blank" rel="noopener">MCX</a></td>
+                <td>022 6731 8888</td>
+                <td><a href="mailto:grievance@mcxindia.com">grievance@mcxindia.com</a></td>
               </tr>
             </tbody>
           </table>
         </div>
-        <p class="table-note">Working Hours: 09:30 AM to 04:00 PM (Monday to Friday, except holidays)</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container">
-      <div class="regulatory-section fade-up">
-        <h2 class="display-sm mb-40">Regulatory Contacts</h2>
-        <div class="regulatory-grid">
-          <div class="regulatory-card">
-            <h3>SEBI</h3>
-            <p class="body-text">
-              <strong>SEBI SCORES Portal:</strong><br>
-              <a href="https://scores.sebi.gov.in" target="_blank" rel="noopener">scores.sebi.gov.in</a>
-            </p>
-          </div>
-          <div class="regulatory-card">
-            <h3>NSE</h3>
-            <p class="body-text">
-              <strong>Toll Free:</strong> 1800-266-0053<br>
-              <strong>Email:</strong> <a href="mailto:ignse@nse.co.in">ignse@nse.co.in</a><br>
-              <a href="https://www.nseindia.com" target="_blank" rel="noopener">www.nseindia.com</a>
-            </p>
-          </div>
-          <div class="regulatory-card">
-            <h3>BSE</h3>
-            <p class="body-text">
-              <strong>Toll Free:</strong> 1800-22-0808<br>
-              <strong>Email:</strong> <a href="mailto:igc@bseindia.com">igc@bseindia.com</a><br>
-              <a href="https://www.bseindia.com" target="_blank" rel="noopener">www.bseindia.com</a>
-            </p>
-          </div>
-          <div class="regulatory-card">
-            <h3>MCX</h3>
-            <p class="body-text">
-              <strong>Toll Free:</strong> 1800-266-6154<br>
-              <strong>Email:</strong> <a href="mailto:grievance@mcxindia.com">grievance@mcxindia.com</a><br>
-              <a href="https://www.mcxindia.com" target="_blank" rel="noopener">www.mcxindia.com</a>
-            </p>
-          </div>
-        </div>
+        <p class="table-note">Note: Please quote complaint Ref No. while raising your complaint at SEBI SCORES / Exchange portal.</p>
       </div>
     </div>
   </section>
@@ -775,7 +814,10 @@
   <script src="js/vendor/three.min.js"></script>
   <script src="js/bundle-b.js"></script>
 
-  
+  <!-- EmailJS Browser SDK (latest v4) -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <!-- Contact form handler (EmailJS init, validation, submission, error handling) -->
+  <script src="js/contact-form.js"></script>
 
 </body>
 </html>
